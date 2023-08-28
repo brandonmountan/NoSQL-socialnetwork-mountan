@@ -36,7 +36,7 @@ module.exports = {
     try {
       const user = await User.findOneAndUpdate(
         { _id: req.params.userId },
-        { username: req.params.username, email: req.params.email }
+        { $addToSet: { friends: req.body.friends } },
       );
 
       res.json(user);
@@ -57,4 +57,28 @@ module.exports = {
       res.status(500).json(err);
     }
   },
+  async addFriend(req, res) {
+    try {
+      const user = await User.findOneAndUpdate(
+        { _id: req.params.userId },
+        { $addToSet: { friends: req.body.friends } },
+      );
+        res.json(user);
+    } catch (err) {
+      res.status(500).json(err)
+    }
+  },
+  async deleteFriend(req, res) {
+    try {
+      const user = await User.findOneAndDelete({ _id: req.params.friends.ObjectId })
+
+      if (!user) {
+        return res.status(404).json({ message: 'No friend with that ID'})
+      }
+
+      res.json({ message: 'Friend deleted successfully'})
+    } catch (err) {
+      res.status(500).json(err)
+    }
+  }
 };
